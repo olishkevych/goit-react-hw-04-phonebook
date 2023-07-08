@@ -1,0 +1,9 @@
+.wrapper {
+  align-items: center;
+}
+
+.center,
+h1,
+h2 {
+  text-align: center;
+}
