@@ -6,15 +6,14 @@ import { useState, useEffect } from 'react';
 import styles from './App.module.css';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(
+    () => JSON.parse(localStorage.getItem('contacts')) ?? []
+  );
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    const strigifiedContacts = localStorage.getItem('contacts');
-    const contacts = JSON.parse(strigifiedContacts) ?? [];
-    setContacts(contacts);
     localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts.length]);
+  }, [contacts]);
 
   const addContact = ({ name, number }) => {
     const isExisting = contacts.find(
@@ -23,25 +22,20 @@ export const App = () => {
     if (isExisting) {
       alert(`${isExisting.name} is already in contacts`);
       return;
-    } else {
-      const contactToAdd = {
-        name: name,
-        number: Number(number),
-        id: nanoid(),
-      };
-
-      localStorage.setItem(
-        'contacts',
-        JSON.stringify([...contacts, contactToAdd])
-      );
-      setContacts([...contacts, contactToAdd]);
     }
+    const contactToAdd = {
+      name: name,
+      number: Number(number),
+      id: nanoid(),
+    };
+
+    setContacts(prevContacts => [...prevContacts, contactToAdd]);
   };
 
   const removeContact = id => {
-    const updatedContacts = contacts.filter(contact => contact.id !== id);
-    localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-    setContacts(updatedContacts);
+    setContacts(prevContacts =>
+      prevContacts.filter(contact => contact.id !== id)
+    );
   };
 
   const onFilterInput = event => {
